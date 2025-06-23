@@ -1,0 +1,48 @@
+name: Simple Website CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Build Stage
+        run: echo "✅ Build complete. HTML file exists: $(ls index.html)"
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Python + Pytest
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Create test script
+        run: |
+          mkdir tests
+          echo "def test_html_title():\n    assert '<title>Project Website</title>' in open('index.html').read()" > tests/test_title.py
+
+      - name: Run HTML Test
+        run: pytest tests
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
