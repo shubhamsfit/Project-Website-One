@@ -27,19 +27,16 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Pytest
-        run: pip install pytest
-      
-      - name: Install Selenium
-        run: pip install selenium
-
-      - name: Install pytest-html
-        run: pip install pytest-html
-
-      - name: Clone Automation Test Repo
+      - name: Install Python Dependencies
         run: |
-          git clone https://github.com/shubhamsfit/Automation-Testing.git automation-tests
-          ls automation-tests
+          pip install pytest selenium pytest-html
+
+      - name: Checkout Automation Test Repo
+        uses: actions/checkout@v3
+        with:
+          repository: shubhamsfit/Automation-Testing
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: automation-tests
 
       - name: Run Automation Tests
         run: |
