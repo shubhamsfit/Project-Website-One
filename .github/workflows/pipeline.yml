@@ -29,6 +29,12 @@ jobs:
 
       - name: Install Pytest
         run: pip install pytest
+      
+      - name: Install Selenium
+        run: pip install selenium
+
+      - name: Install pytest-html
+        run: pip install pytest-html
 
       - name: Clone Automation Test Repo
         run: |
