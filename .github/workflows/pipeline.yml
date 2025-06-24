@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Checkout Code
+      - name: Checkout Website Repo
         uses: actions/checkout@v3
 
       - name: Install Python + Pytest
@@ -27,13 +27,15 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Create test script
+      - name: Clone Automation Test Repo
         run: |
-          mkdir tests
-          echo "def test_html_title():\n    assert '<title>Project Website</title>' in open('index.html').read()" > tests/test_title.py
+          git clone https://github.com/shubhamsfit/Automation-Testing.git automation-tests
+          ls automation-tests
 
-      - name: Run HTML Test
-        run: pytest tests
+      - name: Run Automation Tests
+        run: |
+          cd automation-tests
+          pytest
 
   deploy:
     runs-on: ubuntu-latest
