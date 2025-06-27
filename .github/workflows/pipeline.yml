@@ -1,3 +1,96 @@
+# name: Simple Website CI/CD
+
+# on:
+#   push:
+#     branches: [ main ]
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v3
+
+#       - name: Build Stage
+#         run: |
+#           echo "✅ Build complete. HTML file exists: $(ls index.html)"
+
+#   test:
+#     runs-on: ubuntu-latest
+#     needs: build
+#     steps:
+#       - name: Checkout Website Repo
+#         uses: actions/checkout@v3
+
+#       - name: Install Python + Pytest
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.10'
+
+#       - name: Install Python Dependencies
+#         run: |
+#           pip install pytest selenium pytest-html
+
+#       - name: Checkout Automation Test Repo
+#         uses: actions/checkout@v3
+#         with:
+#           repository: shubhamsfit/Automation-Testing
+#           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+#           path: automation-tests
+
+#       - name: Run Automation Tests and Generate HTML Report
+#         run: |
+#           cd automation-tests
+#           pytest --html=report.html --self-contained-html
+
+#       - name: Send Test Report via Email
+#         uses: dawidd6/action-send-mail@v3
+#         with:
+#           server_address: smtppro.zoho.in
+#           server_port: 465
+#           secure: true
+#           username: ${{ secrets.EMAIL_USERNAME }}
+#           password: ${{ secrets.EMAIL_PASSWORD }}
+#           subject: Dentana Automation Testing Report
+#           to: shubhamkohli2002@gmail.com
+#           cc: shubham.kohli@simplefixit.com
+#           from: ${{ secrets.EMAIL_USERNAME }}
+#           body: |
+#             Hi,
+
+#             Please find the attached Dentana Automation Testing Report from the latest deployment build.
+
+#             Best Regards,  
+#             Shubham Kohli
+#             Quality Analyst
+#           attachments: automation-tests/report.html
+
+#   deploy:
+#     runs-on: ubuntu-latest
+#     needs: test
+#     permissions:
+#       contents: write
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+#         with:
+#           persist-credentials: true
+
+#       - name: Prepare Files (if needed)
+#         run: |
+#           echo "✅ Ready to deploy - contents:"
+#           ls -la
+
+#       - name: Commit & Push Build Output
+#         run: |
+#           git config user.name "github-actions[bot]"
+#           git config user.email "github-actions[bot]@users.noreply.github.com"
+#           git add index.html
+#           git commit -m "Deploy updated site [skip ci]" || echo "No changes to commit"
+#           git push origin main
+
+
+
 name: Simple Website CI/CD
 
 on:
@@ -12,8 +105,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build Stage
-        run: |
-          echo "✅ Build complete. HTML file exists: $(ls index.html)"
+        run: echo "✅ Build complete"
 
   test:
     runs-on: ubuntu-latest
@@ -22,12 +114,12 @@ jobs:
       - name: Checkout Website Repo
         uses: actions/checkout@v3
 
-      - name: Install Python + Pytest
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: Install Python Dependencies
+      - name: Install Dependencies
         run: |
           pip install pytest selenium pytest-html
 
@@ -38,12 +130,34 @@ jobs:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: automation-tests
 
-      - name: Run Automation Tests and Generate HTML Report
+      - name: Run Frontend Tests
         run: |
           cd automation-tests
-          pytest --html=report.html --self-contained-html
+          pytest frontend_tests/ --html=frontend_report.html --self-contained-html || echo "frontend failed" > frontend_failed.txt
 
-      - name: Send Test Report via Email
+      - name: Run Backend Tests
+        run: |
+          cd automation-tests
+          pytest backend_tests/ --html=backend_report.html --self-contained-html || echo "backend failed" > backend_failed.txt
+
+      - name: Send Frontend Failure Email
+        if: success() || failure()
+        run: |
+          if test -f automation-tests/frontend_failed.txt; then
+            echo "Frontend tests failed. Sending email..."
+            echo "FRONTEND=true" >> $GITHUB_ENV
+          fi
+
+      - name: Send Backend Failure Email
+        if: success() || failure()
+        run: |
+          if test -f automation-tests/backend_failed.txt; then
+            echo "Backend tests failed. Sending email..."
+            echo "BACKEND=true" >> $GITHUB_ENV
+          fi
+
+      - name: Send Email for Frontend Failures
+        if: env.FRONTEND == 'true'
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtppro.zoho.in
@@ -51,40 +165,39 @@ jobs:
           secure: true
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: Dentana Automation Testing Report
+          subject: ❌ Frontend Test Failures - Dentana Report
           to: shubhamkohli2002@gmail.com
           cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hi,
 
-            Please find the attached Dentana Automation Testing Report from the latest deployment build.
+            Frontend test(s) failed during the latest CI run. Please check the attached report.
 
             Best Regards,  
             Shubham Kohli
             Quality Analyst
-          attachments: automation-tests/report.html
+          attachments: automation-tests/frontend_report.html
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: test
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Send Email for Backend Failures
+        if: env.BACKEND == 'true'
+        uses: dawidd6/action-send-mail@v3
         with:
-          persist-credentials: true
+          server_address: smtppro.zoho.in
+          server_port: 465
+          secure: true
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: ❌ Backend Test Failures - Dentana Report
+          to: shubhamkohli2002@gmail.com
+          cc: shubham.kohli@simplefixit.com
+          from: ${{ secrets.EMAIL_USERNAME }}
+          body: |
+            Hi,
 
-      - name: Prepare Files (if needed)
-        run: |
-          echo "✅ Ready to deploy - contents:"
-          ls -la
+            Backend test(s) failed during the latest CI run. Please check the attached report.
 
-      - name: Commit & Push Build Output
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git commit -m "Deploy updated site [skip ci]" || echo "No changes to commit"
-          git push origin main
+            Best Regards,  
+            Shubham Kohli
+            Quality Analyst
+          attachments: automation-tests/backend_report.html
