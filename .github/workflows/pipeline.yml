@@ -171,6 +171,7 @@ jobs:
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
+            Hope you are doing great!
 
             Frontend test(s) failed during the latest CI run. Please check the attached report.
 
@@ -194,6 +195,7 @@ jobs:
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
+            Hope you are doing great!
 
             Backend test(s) failed during the latest CI run. Please check the attached report.
 
