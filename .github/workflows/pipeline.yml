@@ -38,47 +38,41 @@ jobs:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: automation-tests
 
-      - name: Run Automation Tests
+      - name: Run Automation Tests and Generate HTML Report
         run: |
           cd automation-tests
-          pytest
+          pytest --html=report.html --self-contained-html
 
-      - name: Upload HTML report artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: selenium-test-report
-          path: reports/report.html
-
-      - name: Send test report via email
+      - name: Send Test Report via Email
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtppro.zoho.in
           server_port: 465
           secure: true
-          username: ${{ secrets.EMAIL_USERNAME }}    # e.g. reports@yourdomain.com
-          password: ${{ secrets.EMAIL_PASSWORD }}    # App-specific password
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
           subject: Selenium Test Report
           to: shubham.kohli@simplefixit.com, shubhamkohli2002@gmail.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hi,
 
-            Please find the attached Selenium test report from the scheduled run.
+            Please find the attached Selenium test report from the latest deployment pipeline.
 
             Regards,  
             GitHub Actions
-          attachments: reports/report.html
+          attachments: automation-tests/report.html
 
   deploy:
     runs-on: ubuntu-latest
     needs: test
     permissions:
-      contents: write  # Needed to push back to the repo
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          persist-credentials: true  # Uses GITHUB_TOKEN for push
+          persist-credentials: true
 
       - name: Prepare Files (if needed)
         run: |
