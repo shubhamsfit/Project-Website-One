@@ -170,7 +170,7 @@ jobs:
           cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
-            Hi team,
+            Hello team,
 
             Frontend test(s) failed during the latest CI run. Please check the attached report.
 
@@ -193,7 +193,7 @@ jobs:
           cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
-            Hi team,
+            Hello team,
 
             Backend test(s) failed during the latest CI run. Please check the attached report.
 
@@ -216,7 +216,7 @@ jobs:
           cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
-            Hi team,
+            Hello team,
 
             Great news! All frontend and backend tests passed successfully in the latest deployment.
 
