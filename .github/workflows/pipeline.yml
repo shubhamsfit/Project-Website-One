@@ -43,20 +43,7 @@ jobs:
           cd automation-tests
           pytest --html=report.html --self-contained-html
 
-      - name: Move report to reports directory for deployment
-        run: |
-          mkdir -p automation-tests/site/reports
-          mv automation-tests/report.html automation-tests/site/reports/index.html
-
-      - name: Deploy report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          publish_dir: automation-tests/site
-          publish_branch: gh-pages
-          keep_files: false
-
-      - name: Send Test Report URL via Email
+      - name: Send Test Report via Email
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtppro.zoho.in
@@ -71,15 +58,12 @@ jobs:
           body: |
             Hi,
 
-            The latest Dentana Automation Testing Report is available online at:
-
-            https://shubhamsfit.github.io/Project-Website-One/reports/
-
-            Please review it at your convenience and let me know if you have any questions.
+            Please find the attached Dentana Automation Testing Report from the latest deployment build.
 
             Best Regards,  
-            Shubham Kohli  
+            Shubham Kohli
             Quality Analyst
+          attachments: automation-tests/report.html
 
   deploy:
     runs-on: ubuntu-latest
