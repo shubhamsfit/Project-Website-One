@@ -43,11 +43,16 @@ jobs:
           cd automation-tests
           pytest --html=report.html --self-contained-html
 
-      - name: Deploy report.html to GitHub Pages branch
+      - name: Move report to reports directory
+        run: |
+          mkdir -p automation-tests/reports
+          mv automation-tests/report.html automation-tests/reports/index.html
+
+      - name: Deploy report.html to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          publish_dir: automation-tests # Contains report.html
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: automation-tests/reports
           publish_branch: gh-pages
           keep_files: false
 
@@ -68,10 +73,34 @@ jobs:
 
             The latest Dentana Automation Testing Report is available online at:
 
-            https://shubhamsfit.github.io/Project-Website-One/report.html
+            https://shubhamsfit.github.io/Project-Website-One/reports/
 
             Please review it at your convenience & let me know in case of any query.
 
             Best Regards,  
-            Shubham Kohli
+            Shubham Kohli  
             Quality Analyst
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+
+      - name: Prepare Files (if needed)
+        run: |
+          echo "✅ Ready to deploy - contents:"
+          ls -la
+
+      - name: Commit & Push Build Output
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Deploy updated site [skip ci]" || echo "No changes to commit"
+          git push origin main
