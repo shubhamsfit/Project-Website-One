@@ -52,8 +52,8 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: Dentana Automation Testing Report
-          to: neeraj.singh@simplefixit.com, aayush.batra@simplefixit.com
-          cc: cc.shubham.kohli@simplefixit.com
+          to: shubhamkohli2002@gmail.com
+          cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hi,
