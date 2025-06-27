@@ -170,7 +170,7 @@ jobs:
           cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
-            Hi,
+            Hi team,
 
             Frontend test(s) failed during the latest CI run. Please check the attached report.
 
@@ -193,7 +193,7 @@ jobs:
           cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
-            Hi,
+            Hi team,
 
             Backend test(s) failed during the latest CI run. Please check the attached report.
 
@@ -201,3 +201,30 @@ jobs:
             Shubham Kohli
             Quality Analyst
           attachments: automation-tests/backend_report.html
+
+      - name: Send Success Email When All Tests Pass
+        if: ${{ env.FRONTEND != 'true' && env.BACKEND != 'true' }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtppro.zoho.in
+          server_port: 465
+          secure: true
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: ✅ All Tests Passed - Dentana Automation Report
+          to: shubhamkohli2002@gmail.com
+          cc: shubham.kohli@simplefixit.com
+          from: ${{ secrets.EMAIL_USERNAME }}
+          body: |
+            Hi team,
+
+            Great news! All frontend and backend tests passed successfully in the latest deployment.
+
+            Please find the attached test reports for your review.
+
+            Best Regards,  
+            Shubham Kohli  
+            Quality Analyst
+          attachments: |
+            automation-tests/frontend_report.html
+            automation-tests/backend_report.html
