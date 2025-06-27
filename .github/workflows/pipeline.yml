@@ -121,7 +121,8 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pytest selenium pytest-html requests
+          pip install pytest 
+    # selenium pytest-html requests
 
       - name: Checkout Automation Test Repo
         uses: actions/checkout@v3
@@ -166,7 +167,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: ❌ Frontend Test Failures - Dentana Report
-          to: shubhamkohli2002@gmail.com
+          to: shubhamkohli2002@gmail.com, aayush.batra@simplefixit.com
           cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
@@ -189,7 +190,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: ❌ Backend Test Failures - Dentana Report
-          to: shubhamkohli2002@gmail.com
+          to: shubhamkohli2002@gmail.com, neeraj.singh@simplefixit.com
           cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
