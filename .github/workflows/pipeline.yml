@@ -51,16 +51,18 @@ jobs:
           secure: true
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: Selenium Test Report
-          to: shubham.kohli@simplefixit.com, shubhamkohli2002@gmail.com
+          subject: Dentana Automation Testing Report
+          to: neeraj.singh@simplefixit.com, aayush.batra@simplefixit.com
+          cc: cc.shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hi,
 
-            Please find the attached Selenium test report from the latest deployment pipeline.
+            Please find the attached Dentana Automation Testing Report from the latest deployment build.
 
-            Regards,  
-            GitHub Actions
+            Best Regards,  
+            Shubham Kohli
+            Quality Analyst
           attachments: automation-tests/report.html
 
   deploy:
