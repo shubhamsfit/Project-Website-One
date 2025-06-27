@@ -121,8 +121,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pytest 
-    # selenium pytest-html requests
+          pip install pytest selenium pytest-html requests
 
       - name: Checkout Automation Test Repo
         uses: actions/checkout@v3
