@@ -292,21 +292,12 @@ jobs:
           pytest backend_tests/ --alluredir=backend_allure_results || echo "backend failed" > backend_failed.txt
           allure generate backend_allure_results --clean -o backend_allure_report
 
-      - name: Upload Frontend Allure Report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: automation-tests/frontend_allure_report
-          destination_dir: frontend
-          keep_files: true
 
-      - name: Upload Backend Allure Report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: automation-tests/backend_allure_report
-          destination_dir: backend
-          keep_files: true
+      - name: Zip Allure Reports
+        run: |
+          cd automation-tests
+          zip -r frontend_allure_report.zip frontend_allure_report
+          zip -r backend_allure_report.zip backend_allure_report
 
       - name: Set Test Failure Flags
         run: |
@@ -326,23 +317,21 @@ jobs:
           secure: true
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: ❌ Frontend Test Failures - Dentana Report
-          to: shubhamkohli2002@gmail.com, aayush.batra@simplefixit.com
+          subject: ❌ Frontend Test Failures - Dentana Automation Testing Report
+          to: aayush.batra@simplefixit.com, shubham.kohli@simplefixit.com
           cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
 
-            Frontend test(s) failed in the latest CI run.
+            Frontend test(s) failed in the latest deployment.
 
-            📊 View the Allure Report:  
-            👉 https://shubhamsfit.github.io/Project-Website-One/frontend/
-
-            Please investigate and take necessary action.
+            📎 The zipped Allure report is attached for your review.
 
             Best Regards,  
             Shubham Kohli  
             Quality Analyst
+          attachments: automation-tests/frontend_allure_report.zip
 
       - name: Send Email for Backend Failures
         if: env.BACKEND == 'true'
@@ -353,23 +342,21 @@ jobs:
           secure: true
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: ❌ Backend Test Failures - Dentana Report
-          to: shubhamkohli2002@gmail.com, neeraj.singh@simplefixit.com
+          subject: ❌ Backend Test Failures - Dentana Automation Testing Report
+          to: neeraj.singh@simplefixit.com, shubham.kohli@simplefixit.com
           cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
 
-            Backend test(s) failed in the latest CI run.
+            Backend test(s) failed in the latest deployment.
 
-            📊 View the Allure Report:  
-            👉 https://shubhamsfit.github.io/Project-Website-One/backend/
-
-            Please investigate and take necessary action.
+            📎 The zipped Allure report is attached for your review.
 
             Best Regards,  
             Shubham Kohli  
             Quality Analyst
+          attachments: automation-tests/backend_allure_report.zip
 
       - name: Send Success Email When All Tests Pass
         if: ${{ env.FRONTEND != 'true' && env.BACKEND != 'true' }}
@@ -380,19 +367,126 @@ jobs:
           secure: true
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: ✅ All Tests Passed - Dentana Automation Report
+          subject: ✅ All Tests Passed - Dentana Automation Testing Report
           to: shubham.kohli@simplefixit.com
-          cc: shubhamkohli2002@gmail.com
+          cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
 
             Great news! All frontend and backend tests passed successfully in the latest deployment.
 
-            📊 Allure Reports:
-            👉 Frontend: https://shubhamsfit.github.io/Project-Website-One/frontend/  
-            👉 Backend: https://shubhamsfit.github.io/Project-Website-One/backend/
+            📎 The Allure reports are attached in zipped format for your reference.
 
             Best Regards,  
             Shubham Kohli  
             Quality Analyst
+          attachments: |
+            automation-tests/frontend_allure_report.zip
+            automation-tests/backend_allure_report.zip
+
+
+      # - name: Upload Frontend Allure Report to GitHub Pages
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: automation-tests/frontend_allure_report
+      #     destination_dir: frontend
+      #     keep_files: true
+
+      # - name: Upload Backend Allure Report to GitHub Pages
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: automation-tests/backend_allure_report
+      #     destination_dir: backend
+      #     keep_files: true
+
+      # - name: Set Test Failure Flags
+      #   run: |
+      #     if test -f automation-tests/frontend_failed.txt; then
+      #       echo "FRONTEND=true" >> $GITHUB_ENV
+      #     fi
+      #     if test -f automation-tests/backend_failed.txt; then
+      #       echo "BACKEND=true" >> $GITHUB_ENV
+      #     fi
+
+      # - name: Send Email for Frontend Failures
+      #   if: env.FRONTEND == 'true'
+      #   uses: dawidd6/action-send-mail@v3
+      #   with:
+      #     server_address: smtppro.zoho.in
+      #     server_port: 465
+      #     secure: true
+      #     username: ${{ secrets.EMAIL_USERNAME }}
+      #     password: ${{ secrets.EMAIL_PASSWORD }}
+      #     subject: ❌ Frontend Test Failures - Dentana Report
+      #     to: shubhamkohli2002@gmail.com, aayush.batra@simplefixit.com
+      #     cc: shubham.kohli@simplefixit.com
+      #     from: ${{ secrets.EMAIL_USERNAME }}
+      #     body: |
+      #       Hello team,
+
+      #       Frontend test(s) failed in the latest CI run.
+
+      #       📊 View the Allure Report:  
+      #       👉 https://shubhamsfit.github.io/Project-Website-One/frontend/
+
+      #       Please investigate and take necessary action.
+
+      #       Best Regards,  
+      #       Shubham Kohli  
+      #       Quality Analyst
+
+      # - name: Send Email for Backend Failures
+      #   if: env.BACKEND == 'true'
+      #   uses: dawidd6/action-send-mail@v3
+      #   with:
+      #     server_address: smtppro.zoho.in
+      #     server_port: 465
+      #     secure: true
+      #     username: ${{ secrets.EMAIL_USERNAME }}
+      #     password: ${{ secrets.EMAIL_PASSWORD }}
+      #     subject: ❌ Backend Test Failures - Dentana Report
+      #     to: shubhamkohli2002@gmail.com, neeraj.singh@simplefixit.com
+      #     cc: shubham.kohli@simplefixit.com
+      #     from: ${{ secrets.EMAIL_USERNAME }}
+      #     body: |
+      #       Hello team,
+
+      #       Backend test(s) failed in the latest CI run.
+
+      #       📊 View the Allure Report:  
+      #       👉 https://shubhamsfit.github.io/Project-Website-One/backend/
+
+      #       Please investigate and take necessary action.
+
+      #       Best Regards,  
+      #       Shubham Kohli  
+      #       Quality Analyst
+
+      # - name: Send Success Email When All Tests Pass
+      #   if: ${{ env.FRONTEND != 'true' && env.BACKEND != 'true' }}
+      #   uses: dawidd6/action-send-mail@v3
+      #   with:
+      #     server_address: smtppro.zoho.in
+      #     server_port: 465
+      #     secure: true
+      #     username: ${{ secrets.EMAIL_USERNAME }}
+      #     password: ${{ secrets.EMAIL_PASSWORD }}
+      #     subject: ✅ All Tests Passed - Dentana Automation Report
+      #     to: shubham.kohli@simplefixit.com
+      #     cc: shubhamkohli2002@gmail.com
+      #     from: ${{ secrets.EMAIL_USERNAME }}
+      #     body: |
+      #       Hello team,
+
+      #       Great news! All frontend and backend tests passed successfully in the latest deployment.
+
+      #       📊 Allure Reports:
+      #       👉 Frontend: https://shubhamsfit.github.io/Project-Website-One/frontend/  
+      #       👉 Backend: https://shubhamsfit.github.io/Project-Website-One/backend/
+
+      #       Best Regards,  
+      #       Shubham Kohli  
+      #       Quality Analyst
