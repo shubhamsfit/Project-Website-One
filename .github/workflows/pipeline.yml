@@ -292,12 +292,13 @@ jobs:
           pytest backend_tests/ --alluredir=backend_allure_results || echo "backend failed" > backend_failed.txt
           allure generate backend_allure_results --clean -o backend_allure_report
 
-
-      - name: Compress Allure Reports
+      - name: Compress Allure Reports and Rename Extensions
         run: |
           cd automation-tests
-          zip -r -9 frontend_report.zip.allure frontend_allure_report
-          zip -r -9 backend_report.zip.allure backend_allure_report
+          zip -r -9 frontend_report.zip frontend_allure_report
+          mv frontend_report.zip frontend_report.zipped
+          zip -r -9 backend_report.zip backend_allure_report
+          mv backend_report.zip backend_report.zipped
 
       - name: Set Test Failure Flags
         run: |
@@ -326,12 +327,12 @@ jobs:
 
             Frontend test(s) failed in the latest deployment.
 
-            📎 The Allure report (zipped) is attached for your review.
+            📎 The Allure report is attached (file extension changed to .zipped — please rename to .zip before opening).
 
             Best Regards,  
             Shubham Kohli  
             Quality Analyst
-          attachments: automation-tests/frontend_report.zip.allure
+          attachments: automation-tests/frontend_report.zipped
 
       - name: Send Email for Backend Failures
         if: env.BACKEND == 'true'
@@ -351,12 +352,12 @@ jobs:
 
             Backend test(s) failed in the latest deployment.
 
-            📎 The Allure report (zipped) is attached for your review.
+            📎 The Allure report is attached (file extension changed to .zipped — please rename to .zip before opening).
 
             Best Regards,  
             Shubham Kohli  
             Quality Analyst
-          attachments: automation-tests/backend_report.zip.allure
+          attachments: automation-tests/backend_report.zipped
 
       - name: Send Success Email When All Tests Pass
         if: ${{ env.FRONTEND != 'true' && env.BACKEND != 'true' }}
@@ -376,14 +377,15 @@ jobs:
 
             Great news! All frontend and backend tests passed successfully in the latest deployment.
 
-            📎 Both Allure reports are attached as zipped files.
+            📎 Both Allure reports are attached (file extensions changed to .zipped — please rename to .zip before opening).
 
             Best Regards,  
             Shubham Kohli  
             Quality Analyst
           attachments: |
-            automation-tests/frontend_report.zip.allure
-            automation-tests/backend_report.zip.allure
+            automation-tests/frontend_report.zipped
+            automation-tests/backend_report.zipped
+
 
 
       # - name: Upload Frontend Allure Report to GitHub Pages
