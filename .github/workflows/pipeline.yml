@@ -319,7 +319,7 @@ jobs:
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: Frontend Test Failure - Dentana Automation Report
           to: aayush.batra@simplefixit.com, shubham.kohli@simplefixit.com
-          cc: priyanka@simplefixit.com
+          cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
@@ -344,7 +344,7 @@ jobs:
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: Backend Test Failure - Dentana Automation Report
           to: neeraj.singh@simplefixit.com, shubham.kohli@simplefixit.com
-          cc: priyanka@simplefixit.com
+          cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
@@ -369,7 +369,7 @@ jobs:
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: ✅ All Tests Passed - Dentana Automation Report
           to: shubham.kohli@simplefixit.com
-          cc: priyanka@simplefixit.com
+          cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
