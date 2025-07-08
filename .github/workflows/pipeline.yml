@@ -336,7 +336,7 @@ jobs:
             Frontend test(s) failed in the latest CI run.
 
             📊 View the Allure Report:  
-            👉 https://shubhamsfit.github.io/Automation-Testing/frontend/
+            👉 https://shubhamsfit.github.io/Project-Website-One/frontend/
 
             Please investigate and take necessary action.
 
@@ -363,7 +363,7 @@ jobs:
             Backend test(s) failed in the latest CI run.
 
             📊 View the Allure Report:  
-            👉 https://shubhamsfit.github.io/Automation-Testing/backend/
+            👉 https://shubhamsfit.github.io/Project-Website-One/backend/
 
             Please investigate and take necessary action.
 
@@ -390,8 +390,8 @@ jobs:
             Great news! All frontend and backend tests passed successfully in the latest deployment.
 
             📊 Allure Reports:
-            👉 Frontend: https://shubhamsfit.github.io/Automation-Testing/frontend/  
-            👉 Backend: https://shubhamsfit.github.io/Automation-Testing/backend/
+            👉 Frontend: https://shubhamsfit.github.io/Project-Website-One/frontend/  
+            👉 Backend: https://shubhamsfit.github.io/Project-Website-One/backend/
 
             Best Regards,  
             Shubham Kohli  
