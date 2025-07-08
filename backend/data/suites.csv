@@ -1,3 +1,3 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"passed","Tue Jul 08 07:41:22 UTC 2025","Tue Jul 08 07:41:22 UTC 2025","38","backend_tests","test_login_API","","","","test_api_status_code",""
-"passed","Tue Jul 08 07:41:22 UTC 2025","Tue Jul 08 07:41:22 UTC 2025","21","backend_tests","test_login_API","","","","test_api_data_content",""
+"passed","Tue Jul 08 07:55:42 UTC 2025","Tue Jul 08 07:55:42 UTC 2025","26","backend_tests","test_login_API","","","","test_api_data_content",""
+"passed","Tue Jul 08 07:55:42 UTC 2025","Tue Jul 08 07:55:42 UTC 2025","128","backend_tests","test_login_API","","","","test_api_status_code",""
