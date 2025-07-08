@@ -331,7 +331,7 @@ jobs:
             Best Regards,  
             Shubham Kohli  
             Quality Analyst
-          attachments: automation-tests/frontend_report.allure.zip
+          attachments: automation-tests/frontend_report.zip.allure
 
       - name: Send Email for Backend Failures
         if: env.BACKEND == 'true'
@@ -356,7 +356,7 @@ jobs:
             Best Regards,  
             Shubham Kohli  
             Quality Analyst
-          attachments: automation-tests/backend_report.allure.zip
+          attachments: automation-tests/backend_report.zip.allure
 
       - name: Send Success Email When All Tests Pass
         if: ${{ env.FRONTEND != 'true' && env.BACKEND != 'true' }}
@@ -382,8 +382,8 @@ jobs:
             Shubham Kohli  
             Quality Analyst
           attachments: |
-            automation-tests/frontend_report.allure.zip
-            automation-tests/backend_report.allure.zip
+            automation-tests/frontend_report.zip.allure
+            automation-tests/backend_report.zip.allure
 
 
       # - name: Upload Frontend Allure Report to GitHub Pages
