@@ -296,8 +296,8 @@ jobs:
       - name: Compress Allure Reports
         run: |
           cd automation-tests
-          zip -r -9 frontend_report.allure.zip frontend_allure_report
-          zip -r -9 backend_report.allure.zip backend_allure_report
+          zip -r -9 frontend_report.zip.allure frontend_allure_report
+          zip -r -9 backend_report.zip.allure backend_allure_report
 
       - name: Set Test Failure Flags
         run: |
