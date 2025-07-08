@@ -91,6 +91,147 @@
 
 
 
+# name: Simple Website CI/CD
+
+# on:
+#   push:
+#     branches: [ main ]
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v3
+
+#       - name: Build Stage
+#         run: echo "✅ Build complete"
+
+#   test:
+#     runs-on: ubuntu-latest
+#     needs: build
+#     steps:
+#       - name: Checkout Website Repo
+#         uses: actions/checkout@v3
+
+#       - name: Set up Python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.10'
+
+#       - name: Install Dependencies
+#         run: |
+#           pip install pytest selenium pytest-html requests
+
+#       - name: Checkout Automation Test Repo
+#         uses: actions/checkout@v3
+#         with:
+#           repository: shubhamsfit/Automation-Testing
+#           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+#           path: automation-tests
+
+#       - name: Run Frontend Tests
+#         run: |
+#           cd automation-tests
+#           pytest frontend_tests/ --html=frontend_report.html --self-contained-html || echo "frontend failed" > frontend_failed.txt
+
+#       - name: Run Backend Tests
+#         run: |
+#           cd automation-tests
+#           pytest backend_tests/ --html=backend_report.html --self-contained-html || echo "backend failed" > backend_failed.txt
+
+#       - name: Send Frontend Failure Email
+#         if: success() || failure()
+#         run: |
+#           if test -f automation-tests/frontend_failed.txt; then
+#             echo "Frontend tests failed. Sending email..."
+#             echo "FRONTEND=true" >> $GITHUB_ENV
+#           fi
+
+#       - name: Send Backend Failure Email
+#         if: success() || failure()
+#         run: |
+#           if test -f automation-tests/backend_failed.txt; then
+#             echo "Backend tests failed. Sending email..."
+#             echo "BACKEND=true" >> $GITHUB_ENV
+#           fi
+
+#       - name: Send Email for Frontend Failures
+#         if: env.FRONTEND == 'true'
+#         uses: dawidd6/action-send-mail@v3
+#         with:
+#           server_address: smtppro.zoho.in
+#           server_port: 465
+#           secure: true
+#           username: ${{ secrets.EMAIL_USERNAME }}
+#           password: ${{ secrets.EMAIL_PASSWORD }}
+#           subject: ❌ Frontend Test Failures - Dentana Report
+#           to: shubhamkohli2002@gmail.com, aayush.batra@simplefixit.com
+#           cc: shubham.kohli@simplefixit.com
+#           from: ${{ secrets.EMAIL_USERNAME }}
+#           body: |
+#             Hello team,
+#             Hope you are doing great!
+
+#             Frontend test(s) failed during the latest CI run. Please check the attached report.
+
+#             Best Regards,  
+#             Shubham Kohli
+#             Quality Analyst
+#           attachments: automation-tests/frontend_report.html
+
+#       - name: Send Email for Backend Failures
+#         if: env.BACKEND == 'true'
+#         uses: dawidd6/action-send-mail@v3
+#         with:
+#           server_address: smtppro.zoho.in
+#           server_port: 465
+#           secure: true
+#           username: ${{ secrets.EMAIL_USERNAME }}
+#           password: ${{ secrets.EMAIL_PASSWORD }}
+#           subject: ❌ Backend Test Failures - Dentana Report
+#           to: shubhamkohli2002@gmail.com, neeraj.singh@simplefixit.com
+#           cc: shubham.kohli@simplefixit.com
+#           from: ${{ secrets.EMAIL_USERNAME }}
+#           body: |
+#             Hello team,
+#             Hope you are doing great!
+
+#             Backend test(s) failed during the latest CI run. Please check the attached report.
+
+#             Best Regards,  
+#             Shubham Kohli
+#             Quality Analyst
+#           attachments: automation-tests/backend_report.html
+
+#       - name: Send Success Email When All Tests Pass
+#         if: ${{ env.FRONTEND != 'true' && env.BACKEND != 'true' }}
+#         uses: dawidd6/action-send-mail@v3
+#         with:
+#           server_address: smtppro.zoho.in
+#           server_port: 465
+#           secure: true
+#           username: ${{ secrets.EMAIL_USERNAME }}
+#           password: ${{ secrets.EMAIL_PASSWORD }}
+#           subject: ✅ All Tests Passed - Dentana Automation Report
+#           to: shubhamkohli2002@gmail.com
+#           cc: shubham.kohli@simplefixit.com
+#           from: ${{ secrets.EMAIL_USERNAME }}
+#           body: |
+#             Hello team,
+
+#             Great news! All frontend and backend tests passed successfully in the latest deployment.
+
+#             Please find the attached test reports for your review.
+
+#             Best Regards,  
+#             Shubham Kohli  
+#             Quality Analyst
+#           attachments: |
+#             automation-tests/frontend_report.html
+#             automation-tests/backend_report.html
+
+
 name: Simple Website CI/CD
 
 on:
@@ -110,6 +251,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      contents: write
+      pages: write
+
     steps:
       - name: Checkout Website Repo
         uses: actions/checkout@v3
@@ -119,9 +264,14 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Dependencies
+      - name: Install Dependencies and Allure CLI
         run: |
-          pip install pytest selenium pytest-html requests
+          pip install pytest selenium requests allure-pytest
+          sudo apt-get install -y openjdk-11-jre
+          wget https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
+          tar -xzf allure-2.27.0.tgz
+          sudo mv allure-2.27.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
 
       - name: Checkout Automation Test Repo
         uses: actions/checkout@v3
@@ -133,26 +283,37 @@ jobs:
       - name: Run Frontend Tests
         run: |
           cd automation-tests
-          pytest frontend_tests/ --html=frontend_report.html --self-contained-html || echo "frontend failed" > frontend_failed.txt
+          pytest frontend_tests/ --alluredir=frontend_allure_results || echo "frontend failed" > frontend_failed.txt
+          allure generate frontend_allure_results --clean -o frontend_allure_report
 
       - name: Run Backend Tests
         run: |
           cd automation-tests
-          pytest backend_tests/ --html=backend_report.html --self-contained-html || echo "backend failed" > backend_failed.txt
+          pytest backend_tests/ --alluredir=backend_allure_results || echo "backend failed" > backend_failed.txt
+          allure generate backend_allure_results --clean -o backend_allure_report
 
-      - name: Send Frontend Failure Email
-        if: success() || failure()
+      - name: Upload Frontend Allure Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: automation-tests/frontend_allure_report
+          destination_dir: frontend
+          keep_files: true
+
+      - name: Upload Backend Allure Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: automation-tests/backend_allure_report
+          destination_dir: backend
+          keep_files: true
+
+      - name: Set Test Failure Flags
         run: |
           if test -f automation-tests/frontend_failed.txt; then
-            echo "Frontend tests failed. Sending email..."
             echo "FRONTEND=true" >> $GITHUB_ENV
           fi
-
-      - name: Send Backend Failure Email
-        if: success() || failure()
-        run: |
           if test -f automation-tests/backend_failed.txt; then
-            echo "Backend tests failed. Sending email..."
             echo "BACKEND=true" >> $GITHUB_ENV
           fi
 
@@ -171,14 +332,17 @@ jobs:
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
-            Hope you are doing great!
 
-            Frontend test(s) failed during the latest CI run. Please check the attached report.
+            Frontend test(s) failed in the latest CI run.
+
+            📊 View the Allure Report:  
+            👉 https://shubhamsfit.github.io/Automation-Testing/frontend/
+
+            Please investigate and take necessary action.
 
             Best Regards,  
-            Shubham Kohli
+            Shubham Kohli  
             Quality Analyst
-          attachments: automation-tests/frontend_report.html
 
       - name: Send Email for Backend Failures
         if: env.BACKEND == 'true'
@@ -195,14 +359,17 @@ jobs:
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
-            Hope you are doing great!
 
-            Backend test(s) failed during the latest CI run. Please check the attached report.
+            Backend test(s) failed in the latest CI run.
+
+            📊 View the Allure Report:  
+            👉 https://shubhamsfit.github.io/Automation-Testing/backend/
+
+            Please investigate and take necessary action.
 
             Best Regards,  
-            Shubham Kohli
+            Shubham Kohli  
             Quality Analyst
-          attachments: automation-tests/backend_report.html
 
       - name: Send Success Email When All Tests Pass
         if: ${{ env.FRONTEND != 'true' && env.BACKEND != 'true' }}
@@ -214,19 +381,18 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: ✅ All Tests Passed - Dentana Automation Report
-          to: shubhamkohli2002@gmail.com
-          cc: shubham.kohli@simplefixit.com
+          to: shubham.kohli@simplefixit.com
+          cc: shubhamkohli2002@gmail.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
 
             Great news! All frontend and backend tests passed successfully in the latest deployment.
 
-            Please find the attached test reports for your review.
+            📊 Allure Reports:
+            👉 Frontend: https://shubhamsfit.github.io/Automation-Testing/frontend/  
+            👉 Backend: https://shubhamsfit.github.io/Automation-Testing/backend/
 
             Best Regards,  
             Shubham Kohli  
             Quality Analyst
-          attachments: |
-            automation-tests/frontend_report.html
-            automation-tests/backend_report.html
