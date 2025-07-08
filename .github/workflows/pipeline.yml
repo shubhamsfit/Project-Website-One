@@ -293,11 +293,11 @@ jobs:
           allure generate backend_allure_results --clean -o backend_allure_report
 
 
-      - name: Zip Allure Reports
+      - name: Compress Allure Reports
         run: |
           cd automation-tests
-          zip -r frontend_allure_report.zip frontend_allure_report
-          zip -r backend_allure_report.zip backend_allure_report
+          zip -r -9 frontend_report.allure.zip frontend_allure_report
+          zip -r -9 backend_report.allure.zip backend_allure_report
 
       - name: Set Test Failure Flags
         run: |
@@ -317,21 +317,21 @@ jobs:
           secure: true
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: ❌ Frontend Test Failures - Dentana Automation Testing Report
+          subject: Frontend Test Failure - Dentana Automation Report
           to: aayush.batra@simplefixit.com, shubham.kohli@simplefixit.com
-          cc: shubham.kohli@simplefixit.com
+          cc: priyanka@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
 
             Frontend test(s) failed in the latest deployment.
 
-            📎 The zipped Allure report is attached for your review.
+            📎 The Allure report (zipped) is attached for your review.
 
             Best Regards,  
             Shubham Kohli  
             Quality Analyst
-          attachments: automation-tests/frontend_allure_report.zip
+          attachments: automation-tests/frontend_report.allure.zip
 
       - name: Send Email for Backend Failures
         if: env.BACKEND == 'true'
@@ -342,21 +342,21 @@ jobs:
           secure: true
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: ❌ Backend Test Failures - Dentana Automation Testing Report
+          subject: Backend Test Failure - Dentana Automation Report
           to: neeraj.singh@simplefixit.com, shubham.kohli@simplefixit.com
-          cc: shubham.kohli@simplefixit.com
+          cc: priyanka@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
 
             Backend test(s) failed in the latest deployment.
 
-            📎 The zipped Allure report is attached for your review.
+            📎 The Allure report (zipped) is attached for your review.
 
             Best Regards,  
             Shubham Kohli  
             Quality Analyst
-          attachments: automation-tests/backend_allure_report.zip
+          attachments: automation-tests/backend_report.allure.zip
 
       - name: Send Success Email When All Tests Pass
         if: ${{ env.FRONTEND != 'true' && env.BACKEND != 'true' }}
@@ -367,23 +367,23 @@ jobs:
           secure: true
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: ✅ All Tests Passed - Dentana Automation Testing Report
+          subject: ✅ All Tests Passed - Dentana Automation Report
           to: shubham.kohli@simplefixit.com
-          cc: shubham.kohli@simplefixit.com
+          cc: priyanka@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Hello team,
 
             Great news! All frontend and backend tests passed successfully in the latest deployment.
 
-            📎 The Allure reports are attached in zipped format for your reference.
+            📎 Both Allure reports are attached as zipped files.
 
             Best Regards,  
             Shubham Kohli  
             Quality Analyst
           attachments: |
-            automation-tests/frontend_allure_report.zip
-            automation-tests/backend_allure_report.zip
+            automation-tests/frontend_report.allure.zip
+            automation-tests/backend_report.allure.zip
 
 
       # - name: Upload Frontend Allure Report to GitHub Pages
