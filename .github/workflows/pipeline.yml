@@ -138,7 +138,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: ✅ All Tests Passed — Dentana Automation Testing Allure Allure Reports
-          to: shubham.kohli@simplefixit.com
+          to: shubhamkohli2002@gmail.com
           cc: shubham.kohli@simplefixit.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
